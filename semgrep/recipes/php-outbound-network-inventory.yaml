@@ -1,0 +1,292 @@
+rules:
+  # ============================================================
+  # PHP OUTBOUND NETWORK INVENTORY
+  # Detect all outbound network calls in PHP source code
+  #
+  # Source code:
+  #   semgrep --config php-outbound-network-inventory.yaml src/
+  #
+  # vendor (requires bypassing gitignore + semgrepignore):
+  #   semgrep --config php-outbound-network-inventory.yaml \
+  #     --no-git-ignore --exclude='!vendor' vendor/
+  # ============================================================
+
+  # --- cURL ---
+  - id: php-outbound-curl-init
+    pattern: curl_init(...)
+    message: >
+      curl_init() call detected - outbound HTTP request.
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  - id: php-outbound-curl-exec
+    pattern: curl_exec(...)
+    message: >
+      curl_exec() call detected - executing cURL request.
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  - id: php-outbound-curl-multi-exec
+    pattern: curl_multi_exec(...)
+    message: >
+      curl_multi_exec() - parallel cURL requests.
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  # --- file_get_contents / fopen (URL wrappers) ---
+  - id: php-outbound-file-get-contents
+    pattern: file_get_contents(...)
+    message: >
+      file_get_contents() call - may fetch remote content via URL wrappers.
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  - id: php-outbound-fopen
+    pattern: fopen($URL, ...)
+    message: >
+      fopen() call - PHP can open URLs with fopen wrappers.
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  - id: php-outbound-copy
+    pattern: copy($SRC, $DEST)
+    message: >
+      copy() - can copy from remote URLs via stream wrappers.
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  # --- Raw sockets ---
+  - id: php-outbound-fsockopen
+    pattern: fsockopen(...)
+    message: >
+      fsockopen() - raw socket connection.
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  - id: php-outbound-pfsockopen
+    pattern: pfsockopen(...)
+    message: >
+      pfsockopen() - persistent raw socket connection.
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  - id: php-outbound-socket-create
+    pattern: socket_create(...)
+    message: >
+      socket_create() - low-level socket.
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  - id: php-outbound-socket-connect
+    pattern: socket_connect(...)
+    message: >
+      socket_connect() - connecting a low-level socket.
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  # --- Stream sockets ---
+  - id: php-outbound-stream-socket-client
+    pattern: stream_socket_client(...)
+    message: >
+      stream_socket_client() - outbound socket connection.
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  - id: php-outbound-stream-socket-server
+    pattern: stream_socket_server(...)
+    message: >
+      stream_socket_server() - opens a listening socket.
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  # --- Guzzle ---
+  - id: php-outbound-guzzle-new
+    pattern-either:
+      - pattern: new GuzzleHttp\Client(...)
+      - pattern: new Client(...)
+    message: >
+      Guzzle HTTP client instantiation.
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  - id: php-outbound-guzzle-request
+    pattern: $CLIENT->request(...)
+    message: >
+      Guzzle-style HTTP request detected.
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  - id: php-outbound-guzzle-get
+    pattern: $CLIENT->get(...)
+    message: >
+      HTTP GET request (Guzzle-style).
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  - id: php-outbound-guzzle-post
+    pattern: $CLIENT->post(...)
+    message: >
+      HTTP POST request (Guzzle-style).
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  - id: php-outbound-guzzle-put
+    pattern: $CLIENT->put(...)
+    message: >
+      HTTP PUT request (Guzzle-style).
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  - id: php-outbound-guzzle-patch
+    pattern: $CLIENT->patch(...)
+    message: >
+      HTTP PATCH request (Guzzle-style).
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  - id: php-outbound-guzzle-delete
+    pattern: $CLIENT->delete(...)
+    message: >
+      HTTP DELETE request (Guzzle-style).
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  # --- Symfony HttpClient ---
+  - id: php-outbound-symfony-httpclient-create
+    pattern: HttpClient::create(...)
+    message: >
+      Symfony HttpClient instantiation.
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  # --- WordPress HTTP API ---
+  - id: php-outbound-wp-remote-get
+    pattern: wp_remote_get(...)
+    message: >
+      wp_remote_get() - WordPress outbound HTTP GET.
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  - id: php-outbound-wp-remote-post
+    pattern: wp_remote_post(...)
+    message: >
+      wp_remote_post() - WordPress outbound HTTP POST.
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  - id: php-outbound-wp-remote-request
+    pattern: wp_remote_request(...)
+    message: >
+      wp_remote_request() - WordPress outbound HTTP request.
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  # --- SoapClient ---
+  - id: php-outbound-soap-client
+    pattern-either:
+      - pattern: new SoapClient(...)
+      - pattern: new \SoapClient(...)
+    message: >
+      SoapClient instantiation - SOAP web service call.
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  # --- DNS ---
+  - id: php-outbound-dns-get-record
+    pattern: dns_get_record(...)
+    message: >
+      dns_get_record() - DNS lookup, can be used for data exfiltration.
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  - id: php-outbound-gethostbyname
+    pattern: gethostbyname(...)
+    message: >
+      gethostbyname() - DNS resolution.
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  - id: php-outbound-checkdnsrr
+    pattern: checkdnsrr(...)
+    message: >
+      checkdnsrr() - DNS record check.
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  # --- mail() ---
+  - id: php-outbound-mail
+    pattern: mail(...)
+    message: >
+      mail() - sends email, outbound network activity.
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory
+
+  # --- header() redirect ---
+  - id: php-outbound-header-location
+    patterns:
+      - pattern: header($HEADER)
+      - metavariable-regex:
+          metavariable: $HEADER
+          regex: .*[Ll]ocation\s*:.*
+    message: >
+      header('Location: ...') - HTTP redirect, may point to external URLs.
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: network-inventory

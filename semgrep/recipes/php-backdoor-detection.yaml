@@ -1,98 +1,14 @@
 rules:
   # ============================================================
   # PHP SUPPLY CHAIN & BACKDOOR DETECTION
-  # Detect outbound network calls and backdoor patterns in PHP
+  # Detect backdoor patterns in PHP dependencies
+  #
+  # Network inventory rules are in php-outbound-network-inventory.yaml
   #
   # Usage:
   #   semgrep --config php-backdoor-detection.yaml \
   #     --no-git-ignore --exclude='!vendor' vendor/
   # ============================================================
-
-  # --- Outbound network: cURL ---
-  - id: php-outbound-curl-init
-    pattern: curl_init(...)
-    message: >
-      curl_init() call detected - outbound HTTP request.
-    severity: WARNING
-    languages: [php]
-    metadata:
-      category: network-inventory
-
-  - id: php-outbound-curl-exec
-    pattern: curl_exec(...)
-    message: >
-      curl_exec() call detected - executing cURL request.
-    severity: WARNING
-    languages: [php]
-    metadata:
-      category: network-inventory
-
-  # --- Outbound network: file_get_contents ---
-  - id: php-outbound-file-get-contents
-    pattern: file_get_contents(...)
-    message: >
-      file_get_contents() call - may fetch remote content via URL wrappers.
-    severity: WARNING
-    languages: [php]
-    metadata:
-      category: network-inventory
-
-  # --- Outbound network: fopen ---
-  - id: php-outbound-fopen
-    pattern: fopen($URL, ...)
-    message: >
-      fopen() call - PHP can open URLs with fopen wrappers.
-    severity: WARNING
-    languages: [php]
-    metadata:
-      category: network-inventory
-
-  # --- Outbound network: stream/socket ---
-  - id: php-outbound-fsockopen
-    pattern: fsockopen(...)
-    message: >
-      fsockopen() - raw socket connection.
-    severity: WARNING
-    languages: [php]
-    metadata:
-      category: network-inventory
-
-  - id: php-outbound-stream-socket-client
-    pattern: stream_socket_client(...)
-    message: >
-      stream_socket_client() - outbound socket connection.
-    severity: WARNING
-    languages: [php]
-    metadata:
-      category: network-inventory
-
-  # --- Outbound network: Guzzle ---
-  - id: php-outbound-guzzle-request
-    pattern: $CLIENT->request(...)
-    message: >
-      Guzzle-style HTTP request detected.
-    severity: WARNING
-    languages: [php]
-    metadata:
-      category: network-inventory
-
-  - id: php-outbound-guzzle-get
-    pattern: $CLIENT->get(...)
-    message: >
-      HTTP GET request (Guzzle-style).
-    severity: WARNING
-    languages: [php]
-    metadata:
-      category: network-inventory
-
-  - id: php-outbound-guzzle-post
-    pattern: $CLIENT->post(...)
-    message: >
-      HTTP POST request (Guzzle-style).
-    severity: WARNING
-    languages: [php]
-    metadata:
-      category: network-inventory
 
   # --- Dynamic code execution ---
   - id: php-suspicious-eval
