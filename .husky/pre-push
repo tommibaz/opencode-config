@@ -1,8 +1,10 @@
 #!/bin/sh
+set +e
 
 # rg exit codes: 0 = matches found, 1 = no matches, 2+ = error
 # We WANT no matches (exit 1), so finding matches (exit 0) means secrets leaked.
 # All output goes to stderr to avoid corrupting the TUI.
+# set +e required: husky enables set -e, but rg exits 1 on no matches.
 
 MATCHES=$(rg --no-ignore --hidden -in --column \
   '(api.?key|secret|token|password|credential|private.?key)\s*[:=]\s*["\x27]?[A-Za-z0-9_\-/+=]{8,}' \
