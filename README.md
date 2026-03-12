@@ -62,6 +62,18 @@ How it works:
 - All output to stderr so it doesn't make a hames of the OpenCode TUI
 - Bypass with `git push --no-verify` if you're sure of yourself
 
+### GPG Commit Signing
+
+All commits are GPG-signed. The git config is set globally:
+
+```bash
+git config --global user.signingkey <your-key-id>
+git config --global commit.gpgsign true
+git config --global tag.gpgSign true
+```
+
+Don't forget to add your public key to GitHub under Settings → SSH and GPG keys.
+
 ### Agent Guidelines
 
 `AGENTS.md` -- System-wide instructions for coding agents, so they don't go off making a bags of things:
