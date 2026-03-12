@@ -55,15 +55,49 @@ A fierce, security-hardened [OpenCode](https://opencode.ai) configuration altoge
 
 You'll be needing [OpenCode](https://opencode.ai), [Semgrep](https://semgrep.dev), and [ripgrep](https://github.com/BurntSushi/ripgrep).
 
-```bash
-# Clone into your OpenCode config directory
-git clone <your-remote> ~/.config/opencode
+### Option A: Replace your global config
 
-# Install dependencies (triggers husky setup via the prepare script)
+If you haven't got an existing OpenCode config you're attached to, you can clone straight into the default location:
+
+```bash
+# Back up any existing config, just to be safe
+mv ~/.config/opencode ~/.config/opencode.bak
+
+# Clone and install
+git clone https://github.com/the-commits/opencode-config.git ~/.config/opencode
 cd ~/.config/opencode && npm install
 ```
 
-The plugins are registered in `opencode.jsonc` and fire up automatically. Semgrep recipes are referenced by the plugin at runtime.
+### Option B: Keep your existing config (recommended)
+
+If you've already got a config you'd rather not disturb, clone this into a separate directory and point OpenCode at it using `OPENCODE_CONFIG_DIR`. This loads plugins, agents, tools, and recipes from the custom directory on top of your existing setup.
+
+```bash
+# Clone into a dedicated directory
+git clone https://github.com/the-commits/opencode-config.git ~/.config/opencode-hardened
+cd ~/.config/opencode-hardened && npm install
+
+# Tell OpenCode to load from it (add to your .bashrc/.zshrc)
+export OPENCODE_CONFIG_DIR=~/.config/opencode-hardened
+```
+
+With this approach your existing `~/.config/opencode/opencode.json` stays untouched. The `OPENCODE_CONFIG_DIR` directory is loaded after the global config, so its plugins, agents, and tools are merged in -- and can override if needed.
+
+### Option C: Cherry-pick what you want
+
+You can also just grab the bits you fancy:
+
+```bash
+# Copy only the plugins into your existing setup
+cp plugins/*.ts ~/.config/opencode/plugins/
+
+# Or just the semgrep recipes
+cp -r semgrep/ ~/.config/opencode/semgrep/
+```
+
+---
+
+The plugins fire up automatically at startup. Semgrep recipes are referenced by the supply chain guard plugin at runtime.
 
 ## Manual scan
 
