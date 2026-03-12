@@ -28,10 +28,9 @@ Security-hardened [OpenCode](https://opencode.ai) configuration with supply chai
 `.husky/pre-push` -- Git hook that scans for leaked secrets before push using ripgrep:
 
 - Catches API keys, tokens, passwords, credentials, private keys
+- Only scans git-tracked files (what actually gets pushed)
 - Reports `file:line:column` for each match
-- Scans dotfiles (`--hidden`) and ignores nothing (`--no-ignore`)
 - All output to stderr to avoid corrupting the OpenCode TUI
-- Excludes `node_modules`, `package-lock.json`, `.git`, `.husky`
 - Bypass with `git push --no-verify`
 
 ### Agent Guidelines

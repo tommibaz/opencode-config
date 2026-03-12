@@ -6,13 +6,10 @@ set +e
 # All output goes to stderr to avoid corrupting the TUI.
 # set +e required: husky enables set -e, but rg exits 1 on no matches.
 
-MATCHES=$(rg --no-ignore --hidden -in --column \
+# Only scan files tracked by git -- these are what actually gets pushed.
+MATCHES=$(git ls-files -z | xargs -0 rg -in --column \
   '(api.?key|secret|token|password|credential|private.?key)\s*[:=]\s*["\x27]?[A-Za-z0-9_\-/+=]{8,}' \
-  --glob '!node_modules' \
-  --glob '!package-lock.json' \
-  --glob '!.git' \
-  --glob '!.husky' \
-  . 2>/dev/null)
+  2>/dev/null)
 RG_EXIT=$?
 
 if [ "$RG_EXIT" -eq 0 ]; then
