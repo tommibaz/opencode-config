@@ -1,0 +1,26 @@
+#!/bin/sh
+
+echo "--- Pre-push: Scanning for secrets ---"
+
+# Scan all staged/tracked files for secrets, API keys, tokens, passwords
+# --no-ignore: don't respect .gitignore (catch everything)
+# --hidden: include dotfiles like .env
+MATCHES=$(rg --no-ignore --hidden -i \
+  '(api.?key|secret|token|password|credential|private.?key)\s*[:=]\s*["\x27]?[A-Za-z0-9_\-/+=]{8,}' \
+  --glob '!node_modules' \
+  --glob '!package-lock.json' \
+  --glob '!.git' \
+  --glob '!.husky' \
+  . 2>/dev/null || true)
+
+if [ -n "$MATCHES" ]; then
+  echo ""
+  echo "BLOCKED: Potential secrets detected!"
+  echo ""
+  echo "$MATCHES"
+  echo ""
+  echo "If these are false positives, push with: git push --no-verify"
+  exit 1
+fi
+
+echo "No secrets found. Proceeding with push."

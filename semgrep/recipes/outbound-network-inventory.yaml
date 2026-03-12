@@ -1,0 +1,227 @@
+rules:
+  # ============================================================
+  # OUTBOUND NETWORK INVENTORY
+  # Detect all outbound network calls in source code
+  #
+  # Source code:
+  #   semgrep --config outbound-network-inventory.yaml src/
+  #
+  # node_modules (requires bypassing gitignore + semgrepignore):
+  #   semgrep --config outbound-network-inventory.yaml \
+  #     --no-git-ignore --exclude='!node_modules' node_modules/
+  # ============================================================
+
+  # --- fetch() ---
+  - id: outbound-fetch
+    pattern: fetch(...)
+    message: >
+      fetch() call detected.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: network-inventory
+
+  # --- Dynamic import of network libraries ---
+  - id: outbound-import-node-fetch
+    pattern: import('node-fetch')
+    message: >
+      Dynamic import of node-fetch detected.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: network-inventory
+
+  - id: outbound-import-http
+    pattern: import('http')
+    message: >
+      Dynamic import of http module.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: network-inventory
+
+  - id: outbound-import-https
+    pattern: import('https')
+    message: >
+      Dynamic import of https module.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: network-inventory
+
+  # --- require() of network modules ---
+  - id: outbound-require-http
+    pattern: require('http')
+    message: >
+      require('http') detected.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: network-inventory
+
+  - id: outbound-require-https
+    pattern: require('https')
+    message: >
+      require('https') detected.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: network-inventory
+
+  - id: outbound-require-node-fetch
+    pattern: require('node-fetch')
+    message: >
+      require('node-fetch') detected.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: network-inventory
+
+  - id: outbound-require-net
+    pattern: require('net')
+    message: >
+      require('net') - raw TCP sockets.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: network-inventory
+
+  - id: outbound-require-tls
+    pattern: require('tls')
+    message: >
+      require('tls') - TLS sockets.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: network-inventory
+
+  - id: outbound-require-dgram
+    pattern: require('dgram')
+    message: >
+      require('dgram') - UDP sockets.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: network-inventory
+
+  - id: outbound-require-dns
+    pattern: require('dns')
+    message: >
+      require('dns') detected.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: network-inventory
+
+  # --- axios ---
+  - id: outbound-axios-call
+    pattern: axios(...)
+    message: >
+      axios() call detected.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: network-inventory
+
+  - id: outbound-axios-get
+    pattern: axios.get(...)
+    message: >
+      axios.get() call detected.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: network-inventory
+
+  - id: outbound-axios-post
+    pattern: axios.post(...)
+    message: >
+      axios.post() call detected.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: network-inventory
+
+  - id: outbound-axios-put
+    pattern: axios.put(...)
+    message: >
+      axios.put() call detected.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: network-inventory
+
+  - id: outbound-axios-patch
+    pattern: axios.patch(...)
+    message: >
+      axios.patch() call detected.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: network-inventory
+
+  - id: outbound-axios-delete
+    pattern: axios.delete(...)
+    message: >
+      axios.delete() call detected.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: network-inventory
+
+  # --- XMLHttpRequest ---
+  - id: outbound-xhr
+    pattern: new XMLHttpRequest(...)
+    message: >
+      XMLHttpRequest instantiation detected.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: network-inventory
+
+  - id: outbound-xhr-open
+    pattern: $XHR.open(...)
+    message: >
+      XMLHttpRequest.open() call detected.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: network-inventory
+
+  # --- WebSocket ---
+  - id: outbound-websocket
+    pattern: new WebSocket(...)
+    message: >
+      WebSocket connection detected.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: network-inventory
+
+  # --- child_process (can be used for curl/wget) ---
+  - id: outbound-require-child-process
+    pattern: require('child_process')
+    message: >
+      require('child_process') detected.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: network-inventory
+
+  # --- Suspicious patterns ---
+  - id: suspicious-eval
+    pattern: eval(...)
+    message: >
+      eval() call - potential dynamic code execution.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: suspicious
+
+  - id: suspicious-function-constructor
+    pattern: new Function(...)
+    message: >
+      new Function() - dynamic code execution.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: suspicious

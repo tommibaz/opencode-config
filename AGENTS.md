@@ -16,6 +16,14 @@ This document provides system-wide guidelines for agentic coding agents.
 
 Write clean, maintainable code. Prioritize readability over cleverness. Follow the principle of least surprise - code should behave as a reader would reasonably expect.
 
+### Reuse Before Writing
+
+Before writing new code, exhaust existing solutions in this order:
+    1. **DRY** - Check if the logic already exists in the codebase. Reuse or extend it.
+    2. **Libraries and frameworks** - Know the imported dependencies and the current framework. Use their built-in utilities, helpers, and patterns before rolling your own.
+    3. **Project conventions** - Follow established patterns in the codebase for similar problems.
+    4. **Only then write new code** - If no existing solution applies, implement it yourself.
+
 ### Minimal Changes
 
 Make focused, incremental changes. Avoid large refactors unless explicitly requested. One logical change per commit. Small changes are easier to review, test, and revert if needed.
@@ -87,3 +95,6 @@ Maximum creativity with no constraints. Explore unconventional solutions and pus
 ## Proactiveness
 
 Be proactive when asked to solve problems, but avoid taking unsolicited actions. Wait for explicit requests before making changes beyond the scope of the current task.
+
+## Security
+When first working with a project that has node_modules (or equivalent dependency directory), run `semgrep --config ~/.config/opencode/semgrep/recipes/ --no-git-ignore --exclude='!node_modules' node_modules/` to audit dependencies for supply chain backdoors and inventory outbound network calls.

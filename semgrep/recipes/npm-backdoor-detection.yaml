@@ -1,0 +1,182 @@
+rules:
+  # ============================================================
+  # NPM SUPPLY CHAIN BACKDOOR DETECTION
+  # Detect common patterns used in npm package compromises
+  #
+  # Usage (must bypass gitignore + semgrepignore for node_modules):
+  #   semgrep --config npm-backdoor-detection.yaml \
+  #     --no-git-ignore --exclude='!node_modules' node_modules/
+  # ============================================================
+
+  # --- Environment variable exfiltration via HTTP ---
+  - id: npm-backdoor-env-exfiltration
+    pattern-either:
+      - pattern: axios.post($URL, process.env)
+    message: >
+      HTTP request sending process.env - possible credential exfiltration backdoor.
+    severity: ERROR
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: HIGH
+
+  # --- eval() with base64 decoding (obfuscated payload) ---
+  - id: npm-backdoor-eval-deobfuscated
+    pattern-either:
+      - pattern: eval(Buffer.from($B64, 'base64').toString(...))
+      - pattern: eval(atob($B64))
+    message: >
+      eval() with base64-decoded string - classic obfuscated backdoor pattern.
+    severity: ERROR
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: HIGH
+
+  - id: npm-backdoor-eval-deobfuscated-2
+    patterns:
+      - pattern: |
+          $DECODED = Buffer.from($B64, 'base64').toString(...);
+          ...
+          eval($DECODED);
+    message: >
+      eval() with base64-decoded variable - obfuscated backdoor pattern.
+    severity: ERROR
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: HIGH
+
+  # --- Reading sensitive files (.ssh, .env, credentials) ---
+  - id: npm-backdoor-sensitive-file-read-ssh
+    pattern: $FS.readFileSync($HOME + '/.ssh/$KEY')
+    message: >
+      Reading SSH keys - possible credential theft.
+    severity: ERROR
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: HIGH
+
+  # --- DNS exfiltration with dynamic hostname ---
+  - id: npm-backdoor-dns-exfiltration
+    pattern-either:
+      - pattern: require('dns').resolve($DATA + '.' + $DOMAIN, ...)
+      - pattern: require('dns').lookup($DATA + '.' + $DOMAIN, ...)
+    message: >
+      DNS query with dynamic hostname - possible DNS-based data exfiltration.
+    severity: ERROR
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: MEDIUM
+
+  # --- child_process.exec with encoded/obfuscated commands ---
+  - id: npm-backdoor-exec-obfuscated
+    pattern-either:
+      - pattern: require('child_process').exec(Buffer.from($B64, 'base64').toString(...))
+      - pattern: require('child_process').execSync(Buffer.from($B64, 'base64').toString(...))
+    message: >
+      child_process.exec with base64-decoded command - obfuscated command execution.
+    severity: ERROR
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: HIGH
+
+  - id: npm-backdoor-exec-obfuscated-2
+    patterns:
+      - pattern: |
+          $CMD = Buffer.from($B64, 'base64').toString(...);
+          ...
+          require('child_process').exec($CMD);
+    message: >
+      child_process.exec with base64-decoded variable - obfuscated command execution.
+    severity: ERROR
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: HIGH
+
+  # --- fetch/request with base64-decoded URL ---
+  - id: npm-backdoor-obfuscated-url
+    pattern-either:
+      - pattern: fetch(Buffer.from($B64, 'base64').toString(...), ...)
+      - pattern: fetch(atob($B64), ...)
+      - pattern: require('https').get(Buffer.from($B64, 'base64').toString(...), ...)
+    message: >
+      Network request with base64-decoded URL - hiding the destination.
+    severity: ERROR
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: HIGH
+
+  # --- process.env serialized and sent over network ---
+  - id: npm-backdoor-env-to-network
+    patterns:
+      - pattern: |
+          $DATA = JSON.stringify(process.env);
+          ...
+          $REQ.write($DATA);
+    message: >
+      process.env serialized and sent over network - environment variable exfiltration.
+    severity: ERROR
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: HIGH
+
+  - id: npm-backdoor-env-to-fetch
+    patterns:
+      - pattern: |
+          $DATA = JSON.stringify(process.env);
+          ...
+          fetch($URL, ...);
+    message: >
+      process.env serialized then sent via fetch - environment variable exfiltration.
+    severity: ERROR
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: HIGH
+
+  # --- Obfuscated require hiding module names ---
+  - id: npm-backdoor-obfuscated-require
+    pattern-either:
+      - pattern: require(Buffer.from($B64, 'base64').toString(...))
+      - pattern: require(atob($B64))
+    message: >
+      require() with base64-decoded module name - hiding which module is loaded.
+    severity: ERROR
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: HIGH
+
+  # --- Reverse shell patterns ---
+  - id: npm-backdoor-reverse-shell-spawn
+    pattern: |
+      require('child_process').spawn('/bin/sh', ['-i'], ...)
+    message: >
+      Spawning interactive shell - reverse shell pattern.
+    severity: ERROR
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: HIGH
+
+  # --- postinstall downloading remote code ---
+  - id: npm-backdoor-curl-exec
+    pattern-either:
+      - pattern: require('child_process').execSync('curl ...')
+      - pattern: require('child_process').execSync('wget ...')
+      - pattern: require('child_process').exec('curl ...')
+      - pattern: require('child_process').exec('wget ...')
+    message: >
+      Downloading remote code via curl/wget in child_process - supply chain attack vector.
+    severity: ERROR
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: HIGH
