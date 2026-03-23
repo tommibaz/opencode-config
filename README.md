@@ -57,6 +57,13 @@ How it works:
 | `go-backdoor-detection.yaml` | 24 | Go outbound + backdoors (net/http, net.Dial, gRPC, DNS, init() abuse, download+exec, env exfil, plugin.Open, CGo) |
 | `c-cpp-backdoor-detection.yaml` | 24 | C/C++ outbound + suspicious (socket, libcurl, getaddrinfo, system, execve, dlopen, mmap, VirtualAlloc, Boost.Asio) |
 
+### Chrome DevTools MCP
+
+`opencode.jsonc` -- Configured to run [Chrome DevTools MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp). Allows the agent to control a headless Chrome instance or connect to a running one via debug port (9222) for advanced web tasks.
+
+- Runs via `npx` (requires Node.js)
+- Can inspect DOM, network, console, and run audits
+
 ### Pre-Push Secret Scanning
 
 `.husky/pre-push` -- A git hook that scans your tracked files for leaked secrets before you push. Two-pass approach using ripgrep:
@@ -93,7 +100,7 @@ git clone https://github.com/<you>/opencode-config.git ~/.config/opencode-config
 cd ~/.config/opencode-config
 
 # Check out the latest release
-git checkout v1.1.1
+git checkout v1.2.0
 
 # Install dependencies
 npm install
@@ -118,7 +125,7 @@ Pull new releases from upstream and check out the tag:
 ```bash
 cd ~/.config/opencode-config
 git fetch --tags
-git checkout v1.1.1
+git checkout v1.2.0
 npm install
 ```
 

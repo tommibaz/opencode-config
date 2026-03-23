@@ -6,6 +6,10 @@
 		"semgrep": {
 			"type": "local",
 			"command": ["semgrep", "mcp"]
+		},
+		"chrome-devtools": {
+			"type": "local",
+			"command": ["npx", "-y", "chrome-devtools-mcp@latest"]
 		}
 	},
 	"provider": {
