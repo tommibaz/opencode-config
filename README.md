@@ -129,28 +129,20 @@ You'll be needing [OpenCode](https://opencode.ai), [Semgrep](https://semgrep.dev
 Fork or clone the repo, check out a release tag, and install. Updates come through git.
 
 ```bash
-# Fork on GitHub first, then:
-git clone https://github.com/<you>/opencode-config.git ~/.config/opencode-config
-cd ~/.config/opencode-config
+# Back up your existing config if you have one
+[ -d ~/.config/opencode ] && mv ~/.config/opencode ~/.config/opencode.bak
+
+# Clone straight into ~/.config/opencode -- no extra env var needed
+# (fork on GitHub first if you want your own copy to push to)
+git clone https://github.com/the-commits/opencode-config.git ~/.config/opencode
+cd ~/.config/opencode
 
 # Check out the latest release
-git checkout v1.3.1
+git checkout v1.3.2
 
 # Install dependencies
 npm install
-
-# Tell OpenCode to use this config
-# bash/zsh: add to ~/.bashrc or ~/.zshrc
-export OPENCODE_CONFIG=~/.config/opencode-config/opencode.jsonc
-
-# fish: add to ~/.config/fish/config.fish
-set -gx OPENCODE_CONFIG ~/.config/opencode-config/opencode.jsonc
-
-# Windows PowerShell: add to your $PROFILE
-$env:OPENCODE_CONFIG = "$env:USERPROFILE\.config\opencode-config\opencode.jsonc"
 ```
-
-If you've no existing config, you can clone straight into `~/.config/opencode` instead -- no `OPENCODE_CONFIG` needed.
 
 #### Updating
 
