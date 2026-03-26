@@ -18,14 +18,24 @@ set +e
 HOOK_DIR="$(cd "$(dirname "$0")" && pwd)"
 CONFIG_DIR="$(dirname "$HOOK_DIR")"
 PATTERN_FILE="${CONFIG_DIR}/secrets/secret-patterns.txt"
-CACHE_TEST="${CONFIG_DIR}/tests/cache-test.ts"
-
 # --- Unit tests ---
-# Run cache logic tests if bun is available. Failure blocks push.
-if [ -f "$CACHE_TEST" ] && command -v bun >/dev/null 2>&1; then
-  bun run "$CACHE_TEST" 2>&1 | sed 's/^/  /' >&2
+# Run unit tests (fast, ~100ms). Failure blocks push.
+if command -v bun >/dev/null 2>&1; then
+  SKIP_E2E=1 bun test "${CONFIG_DIR}/tests/" 2>&1 | sed 's/^/  /' >&2
   if [ "${PIPESTATUS[0]:-$?}" -ne 0 ]; then
-    echo "BLOCKED: Cache unit tests failed." >&2
+    echo "BLOCKED: Unit tests failed." >&2
+    exit 1
+  fi
+fi
+
+# --- E2E integration tests ---
+# Runs real semgrep scans against real packages (~50s).
+# Skip with: SKIP_E2E=1 git push
+if command -v bun >/dev/null 2>&1 && [ "${SKIP_E2E:-0}" != "1" ]; then
+  echo "Running E2E integration tests (skip with SKIP_E2E=1)..." >&2
+  bun test "${CONFIG_DIR}/tests/supply-chain-guard/e2e.test.ts" 2>&1 | sed 's/^/  /' >&2
+  if [ "${PIPESTATUS[0]:-$?}" -ne 0 ]; then
+    echo "BLOCKED: E2E tests failed." >&2
     exit 1
   fi
 fi

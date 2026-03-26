@@ -18,7 +18,20 @@ An opinionated [OpenCode](https://opencode.ai) configuration with security baked
 
 ### Supply Chain Guard Plugin
 
-`plugins/supply-chain-guard.ts` -- Automatically scans your project after any package install or update. Covers nine ecosystems, scanning both vendor directories and your own source code.
+`plugins/supply-chain-guard/` -- Automatically scans your project after any package install or update. Covers nine ecosystems, scanning both vendor directories and your own source code.
+
+Split into focused modules following SRP:
+
+| Module | Responsibility |
+|---|---|
+| `ecosystems.ts` | Ecosystem configs, regex patterns, scan pass definitions |
+| `hashing.ts` | SHA-256 file/lockfile/recipe fingerprinting (async I/O) |
+| `cache.ts` | Cache persistence, hit detection, stale entry eviction |
+| `detection.ts` | Match bash commands to ecosystem install patterns |
+| `formatting.ts` | Transform Semgrep JSON output into readable summaries |
+| `scanner.ts` | Orchestrate Semgrep execution across scan passes |
+| `plugin.ts` | Wire hooks together, manage pending-call state |
+| `index.ts` | Barrel re-export of public API |
 
 | Ecosystem | Package Managers | Scans |
 |---|---|---|
@@ -35,8 +48,8 @@ An opinionated [OpenCode](https://opencode.ai) configuration with security baked
 How it works:
 - Intercepts install/update commands via `tool.execute.before/after` hooks
 - Runs Semgrep with custom security recipes against the appropriate targets
-- Smart caching: hashes the lockfile and recipe files, skips the scan if nothing's changed
-- Persistent cache survives restarts (`.supply-chain-guard-cache.json`)
+- Smart caching: SHA-256 hashes the lockfile and recipe files, skips the scan if nothing's changed
+- Persistent cache survives restarts (`.supply-chain-guard-cache.json`) with automatic eviction of entries older than 90 days
 - Groups findings by rule, shows details inline in the agent's output
 
 ### Semgrep Security Recipes
@@ -139,7 +152,7 @@ git clone https://github.com/<you>/opencode-config.git ~/.config/opencode
 cd ~/.config/opencode
 
 # Check out the latest release
-git checkout v1.3.4
+git checkout v1.4.0
 
 # Install dependencies
 npm install
@@ -152,7 +165,7 @@ Pull new releases from upstream and check out the tag:
 ```bash
 cd ~/.config/opencode
 git fetch --tags
-git checkout v1.3.4
+git checkout v1.4.0
 npm install
 ```
 
@@ -162,7 +175,7 @@ You can also just grab the bits you fancy:
 
 ```bash
 # Copy only the plugins into your existing setup
-cp plugins/*.ts ~/.config/opencode/plugins/
+cp -r plugins/ ~/.config/opencode/plugins/
 
 # Or just the semgrep recipes
 cp -r semgrep/ ~/.config/opencode/semgrep/
@@ -175,6 +188,50 @@ cp .husky/pre-push ~/.config/opencode/.husky/pre-push
 ---
 
 The plugins fire up automatically at startup. Semgrep recipes are referenced by the supply chain guard plugin at runtime.
+
+## Testing
+
+Tests use [Bun's built-in test runner](https://bun.sh/docs/cli/test) (`bun:test`). Two tiers:
+
+### Unit tests (~100ms)
+
+127 tests across 7 modules. Pure, fast, no external dependencies.
+
+```bash
+SKIP_E2E=1 bun test
+```
+
+### E2E integration tests (~50s)
+
+7 tests that exercise the full plugin pipeline with real npm/pip/go installs and real Semgrep scans. Requires: `npm`, `semgrep`, `python3` (for venv), `go`.
+
+```bash
+bun test tests/supply-chain-guard/e2e.test.ts
+```
+
+| Test | What it verifies |
+|---|---|
+| Findings detection | Semgrep catches backdoor patterns in installed packages |
+| Cache hit | Second identical install returns cached result |
+| Cache bust | Changing a dependency invalidates cache and triggers rescan |
+| pip ecosystem | Plugin detects and scans pip installs |
+| go ecosystem | Plugin detects and scans go mod downloads |
+| Multi-ecosystem | Single command with both npm and pip triggers both scans |
+| No-lockfile edge | Plugin scans successfully without a lockfile (no caching) |
+
+### Running everything
+
+```bash
+bun test
+```
+
+### Pre-push hook
+
+Both tiers run automatically on `git push` via the Husky pre-push hook. Unit tests run first (fast fail), then E2E. Skip E2E for faster pushes:
+
+```bash
+SKIP_E2E=1 git push
+```
 
 ## Manual scan
 

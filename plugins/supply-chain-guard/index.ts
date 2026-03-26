@@ -1,0 +1,5 @@
+export { SupplyChainGuard } from "./plugin.ts"
+export type { EcosystemConfig, ScanPass } from "./ecosystems.ts"
+export type { DetectedInstall } from "./detection.ts"
+export type { CacheEntry, Cache } from "./cache.ts"
+export type { ScanResult, ShellExecutor } from "./scanner.ts"

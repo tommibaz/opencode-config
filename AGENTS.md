@@ -28,9 +28,31 @@ Before writing new code, exhaust existing solutions in this order:
 
 Make focused, incremental changes. Avoid large refactors unless explicitly requested. One logical change per commit. Small changes are easier to review, test, and revert if needed.
 
-### Testing
+### Testing (TDD - Red/Green/Refactor)
 
-Verify your changes work correctly. When implementing features or fixing bugs, test the changes manually or with automated tests. Test edge cases, error conditions, and typical usage patterns.
+All projects must follow strict Test-Driven Development using the red-green-refactor cycle:
+1. **Red** - Write a failing test first that defines the desired behavior or exposes the bug.
+2. **Green** - Write the minimum code necessary to make the test pass. Nothing more.
+3. **Refactor** - Clean up the implementation while keeping all tests green.
+
+Never write production code without a corresponding failing test. Test edge cases, error conditions, and typical usage patterns. If fixing a bug, write a test that reproduces the bug before writing the fix.
+
+### Single Responsibility Principle (SRP)
+
+Every module, class, and function must have exactly one reason to change. This is a strict system-wide rule:
+- **Functions** should do one thing and do it well. If a function name requires "and" to describe it, split it.
+- **Classes/modules** should encapsulate a single concern. If a class has methods that operate on unrelated state, split it.
+- **Files** should contain one cohesive unit of functionality. Avoid god files that accumulate unrelated logic.
+
+When in doubt, prefer splitting over combining. Smaller, focused units are easier to test, reuse, and reason about.
+
+### Small Files and Scopes
+
+Keep files and scopes small. Large files are a code smell and should be actively avoided:
+- Prefer many small, focused files over few large ones.
+- Keep functions short - if a function exceeds ~20-30 lines, consider extracting sub-functions.
+- Keep files focused - if a file exceeds ~200-300 lines, look for opportunities to split it.
+- Limit nesting depth. Deeply nested code is hard to follow; use early returns, guard clauses, and extraction to keep scopes shallow.
 
 ### Error Handling
 
