@@ -30,12 +30,18 @@ Make focused, incremental changes. Avoid large refactors unless explicitly reque
 
 ### Testing (TDD - Red/Green/Refactor)
 
-All projects must follow strict Test-Driven Development using the red-green-refactor cycle:
-1. **Red** - Write a failing test first that defines the desired behavior or exposes the bug.
-2. **Green** - Write the minimum code necessary to make the test pass. Nothing more.
-3. **Refactor** - Clean up the implementation while keeping all tests green.
+**This is non-negotiable.** All projects must follow strict Test-Driven Development using the red-green-refactor cycle. No exceptions.
 
-Never write production code without a corresponding failing test. Test edge cases, error conditions, and typical usage patterns. If fixing a bug, write a test that reproduces the bug before writing the fix.
+1. **Red** - Write a failing test first that defines the desired behavior or exposes the bug. Run the test and confirm it fails. Do not proceed until you have a red test.
+2. **Green** - Write the minimum code necessary to make the test pass. Nothing more. Run the test and confirm it passes.
+3. **Refactor** - Clean up the implementation while keeping all tests green. Run the tests again after any refactor.
+
+**Hard rules:**
+- Never write or modify production code without a corresponding failing test written first.
+- Never skip the red step. If you cannot articulate a failing test, you do not understand the requirement.
+- If fixing a bug, write a test that reproduces the bug before writing the fix.
+- Test edge cases, error conditions, and typical usage patterns.
+- Run the test suite after every change to confirm the cycle is intact.
 
 ### Single Responsibility Principle (SRP)
 
@@ -71,7 +77,7 @@ Be descriptive and consistent. Use clear names that convey intent. Follow langua
 
 ### Code Style
 
-Follow the project's existing style. Match indentation, brace placement, and formatting conventions already in use. When creating new files, use reasonable defaults for the language.
+Follow the project's existing style. Before writing or editing a file, read nearby files in the same directory to identify the established conventions. Match indentation (tabs vs spaces), semicolon usage, quote style, brace placement, and formatting conventions already in use. When creating new files, adopt the style of the closest existing file in the same directory. Never mix styles within a directory.
 
 ### File Operations
 
@@ -83,29 +89,21 @@ Be concise and direct. Answer questions directly without unnecessary preamble. U
 
 ## Mode-Specific Guidelines
 
-### Analyze Mode
+### Analyze Mode (read-only, temperature: 0.1)
 
-Follow analysis frameworks: dissect components, contextualize ecosystem, invert negative space, synthesize patterns, examine your own lenses. Use webfetch to gather references when analyzing.
+Follow analysis frameworks: dissect components, contextualize ecosystem, invert negative space, synthesize patterns, examine your own lenses. Use webfetch to gather references when analyzing. No file modifications or command execution permitted.
 
-### Creative Mode
+### Build Mode (full access, temperature: 0.0)
 
-Suspend judgment, challenge assumptions, cross-pollinate from unrelated fields, use metaphors freely, embrace constraints as catalysts for innovation.
+Focus on correctness and efficiency. All tools are enabled for maximum productivity. This is the only mode with write and execution permissions.
 
-### Brainstorm Mode
+### Plan Mode (read-only, temperature: 0.1)
 
-Generate multiple ideas rapidly without evaluation. Focus on quantity and variety of concepts.
+Think through implementation before acting. Read files and understand codebase structure before proposing changes. No file modifications or command execution permitted.
 
-### Build Mode
+### Brainstorm Mode (read-only, temperature: 0.7)
 
-Focus on correctness and efficiency. All tools are enabled for maximum productivity.
-
-### Plan Mode
-
-Think through implementation before acting. Read files and understand codebase structure before making changes.
-
-### Wild Mode
-
-Maximum creativity with no constraints. Explore unconventional solutions and push boundaries.
+Suspend judgment, challenge assumptions, cross-pollinate from unrelated fields, use metaphors freely, embrace constraints as catalysts for innovation. Generate multiple ideas rapidly without evaluation. Focus on quantity and variety of concepts. No file modifications or command execution permitted.
 
 ## When Uncertain
 

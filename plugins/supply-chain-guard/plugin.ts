@@ -1,5 +1,6 @@
 import type { Plugin } from "@opencode-ai/plugin"
 import path from "node:path"
+import { resolveConfigDir } from "../../lib/resolve-config-dir.ts"
 import { detectInstalls, type DetectedInstall } from "./detection.ts"
 import { hashLockfiles, hashRecipes } from "./hashing.ts"
 import {
@@ -16,13 +17,6 @@ interface PendingCall {
   detections: DetectedInstall[]
   cwd?: string
   lockfileHashesBefore: Map<string, string | null>
-}
-
-function resolveConfigDir(): string {
-  if (process.env.OPENCODE_CONFIG) {
-    return path.dirname(process.env.OPENCODE_CONFIG)
-  }
-  return path.join(process.env.HOME || "~", ".config", "opencode")
 }
 
 export const SupplyChainGuard: Plugin & {

@@ -135,7 +135,15 @@ The prefix patterns live in `secrets/secret-patterns.txt` (60 patterns covering 
 
 ## Setup
 
-You'll be needing [OpenCode](https://opencode.ai), [Semgrep](https://semgrep.dev), and [ripgrep](https://github.com/BurntSushi/ripgrep).
+You'll be needing [OpenCode](https://opencode.ai), [Semgrep](https://semgrep.dev), [ripgrep](https://github.com/BurntSushi/ripgrep), and [Bun](https://bun.sh) (for running tests).
+
+### Install Bun
+
+Bun is required for the test runner (`bun test`). Install it with:
+
+```bash
+curl -fsSL https://bun.sh/install | bash
+```
 
 ### Fork or clone (recommended)
 
@@ -195,7 +203,7 @@ Tests use [Bun's built-in test runner](https://bun.sh/docs/cli/test) (`bun:test`
 
 ### Unit tests (~100ms)
 
-127 tests across 7 modules. Pure, fast, no external dependencies.
+127 tests across 7 modules covering the supply chain guard, plus 5 tests for the shared `resolveConfigDir` utility. Pure, fast, no external dependencies.
 
 ```bash
 SKIP_E2E=1 bun test
