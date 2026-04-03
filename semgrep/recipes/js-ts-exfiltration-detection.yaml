@@ -107,6 +107,16 @@ rules:
     pattern-either:
       - pattern: require('dns').resolveTxt($DOMAIN, ...)
       - pattern: require('dns').resolve($DOMAIN, 'TXT', ...)
+      - patterns:
+          - pattern: import $DNS from 'dns'
+          - pattern-inside: |
+              ...
+              $DNS.resolveTxt($DOMAIN, ...)
+      - patterns:
+          - pattern: import $DNS from 'dns'
+          - pattern-inside: |
+              ...
+              $DNS.resolve($DOMAIN, 'TXT', ...)
     message: >
       DNS TXT record resolution — possible DNS-based data exfiltration or C2 channel.
     severity: WARNING
@@ -154,6 +164,8 @@ rules:
     pattern-either:
       - pattern: require('tor-request')
       - pattern: require('tor')
+      - pattern: import $X from 'tor-request'
+      - pattern: import $X from 'tor'
     message: >
       Tor client import — possible anonymized exfiltration channel.
     severity: WARNING
@@ -167,6 +179,8 @@ rules:
     pattern-either:
       - pattern: require('ipfs-http-client')
       - pattern: require('ipfs-core')
+      - pattern: import $X from 'ipfs-http-client'
+      - pattern: import $X from 'ipfs-core'
     message: >
       IPFS client import — possible decentralized exfiltration channel.
     severity: WARNING
@@ -180,6 +194,8 @@ rules:
     pattern-either:
       - pattern: require('whatsapp-web.js')
       - pattern: require('baileys')
+      - pattern: import $X from 'whatsapp-web.js'
+      - pattern: import $X from 'baileys'
     message: >
       WhatsApp client import — possible encrypted exfiltration channel.
     severity: WARNING
@@ -193,6 +209,8 @@ rules:
     pattern-either:
       - pattern: require('matrix-js-sdk')
       - pattern: require('matrix-bot-sdk')
+      - pattern: import $X from 'matrix-js-sdk'
+      - pattern: import $X from 'matrix-bot-sdk'
     message: >
       Matrix client import — possible encrypted exfiltration channel.
     severity: WARNING
@@ -206,6 +224,8 @@ rules:
     pattern-either:
       - pattern: require('signal-cli-rest-api')
       - pattern: require('signal-desktop')
+      - pattern: import $X from 'signal-cli-rest-api'
+      - pattern: import $X from 'signal-desktop'
     message: >
       Signal client import — possible encrypted exfiltration channel.
     severity: WARNING
@@ -219,6 +239,8 @@ rules:
     pattern-either:
       - pattern: require('ssh2')
       - pattern: require('node-ssh')
+      - pattern: import $X from 'ssh2'
+      - pattern: import $X from 'node-ssh'
     message: >
       SSH client import — possible exfiltration channel.
     severity: WARNING
@@ -233,6 +255,9 @@ rules:
       - pattern: require('ftp')
       - pattern: require('basic-ftp')
       - pattern: require('ssh2-sftp-client')
+      - pattern: import $X from 'ftp'
+      - pattern: import $X from 'basic-ftp'
+      - pattern: import $X from 'ssh2-sftp-client'
     message: >
       FTP/SFTP client import — possible exfiltration channel.
     severity: WARNING
@@ -246,6 +271,8 @@ rules:
     pattern-either:
       - pattern: require('irc')
       - pattern: require('node-irc')
+      - pattern: import $X from 'irc'
+      - pattern: import $X from 'node-irc'
     message: >
       IRC client import — possible exfiltration channel.
     severity: WARNING
@@ -259,6 +286,8 @@ rules:
     pattern-either:
       - pattern: require('mqtt')
       - pattern: require('mqtt-packet')
+      - pattern: import $X from 'mqtt'
+      - pattern: import $X from 'mqtt-packet'
     message: >
       MQTT client import — possible exfiltration channel.
     severity: WARNING
@@ -272,6 +301,8 @@ rules:
     pattern-either:
       - pattern: require('redis')
       - pattern: require('ioredis')
+      - pattern: import $X from 'redis'
+      - pattern: import $X from 'ioredis'
     message: >
       Redis client import — possible exfiltration channel.
     severity: WARNING
@@ -285,8 +316,25 @@ rules:
     pattern-either:
       - pattern: require('@grpc/grpc-js')
       - pattern: require('grpc')
+      - pattern: import $X from '@grpc/grpc-js'
+      - pattern: import $X from 'grpc'
     message: >
       gRPC client import — possible exfiltration channel.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: MEDIUM
+
+  # --- Exfiltration via custom HTTP headers ---
+  - id: js-ts-header-exfiltration
+    patterns:
+      - pattern: 'fetch($URL, { headers: { $HEADER: $DATA } })'
+      - metavariable-regex:
+          metavariable: $HEADER
+          regex: '(?i)"?(x-data|x-payload|x-token|x-secret|x-key|x-info|x-env)"?'
+    message: >
+      Data sent via custom HTTP header — possible header-based exfiltration.
     severity: WARNING
     languages: [javascript, typescript]
     metadata:

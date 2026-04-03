@@ -10,7 +10,7 @@ on:
       - .github/workflows/semgrep.yml
   schedule:
     # random HH:MM to avoid a load spike on GitHub Actions at 00:00
-    - cron: '08 30 * * *'
+    - cron: '30 08 * * *'
 jobs:
   semgrep:
     name: semgrep/ci
@@ -34,4 +34,5 @@ jobs:
                   --config semgrep/recipes/js-ts-persistence-detection.yaml \
                   --config semgrep/recipes/js-ts-exfiltration-detection.yaml \
                   --include='*.ts' --include='*.js' --include='*.tsx' --include='*.jsx' \
+                  --exclude='tests/' \
                   --error

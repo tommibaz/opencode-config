@@ -11,6 +11,9 @@ rules:
       - pattern: require('iohook')
       - pattern: require('keylogger')
       - pattern: require('node-key-sender')
+      - pattern: import $X from 'iohook'
+      - pattern: import $X from 'keylogger'
+      - pattern: import $X from 'node-key-sender'
     message: >
       Keylogger library import — possible credential capture.
     severity: ERROR
@@ -25,6 +28,9 @@ rules:
       - pattern: require('screenshot-desktop')
       - pattern: require('desktop-screenshot')
       - pattern: require('node-screenshots')
+      - pattern: import $X from 'screenshot-desktop'
+      - pattern: import $X from 'desktop-screenshot'
+      - pattern: import $X from 'node-screenshots'
     message: >
       Screenshot capture library import — possible surveillance behavior.
     severity: WARNING
@@ -40,6 +46,10 @@ rules:
       - pattern: require('mic')
       - pattern: require('node-webcam')
       - pattern: require('webcam')
+      - pattern: import $X from 'node-record-lpcm16'
+      - pattern: import $X from 'mic'
+      - pattern: import $X from 'node-webcam'
+      - pattern: import $X from 'webcam'
     message: >
       Microphone or camera capture library import — possible surveillance behavior.
     severity: WARNING
@@ -67,6 +77,10 @@ rules:
       - pattern: require('cryptocurrency-miner')
       - pattern: require('webminer')
       - pattern: require('node-cryptonight')
+      - pattern: import $X from 'coin-hive'
+      - pattern: import $X from 'cryptocurrency-miner'
+      - pattern: import $X from 'webminer'
+      - pattern: import $X from 'node-cryptonight'
     message: >
       Cryptocurrency mining library import — possible unauthorized mining.
     severity: ERROR
@@ -81,6 +95,9 @@ rules:
       - pattern: require('steganography')
       - pattern: require('stegcloak')
       - pattern: require('png-steg')
+      - pattern: import $X from 'steganography'
+      - pattern: import $X from 'stegcloak'
+      - pattern: import $X from 'png-steg'
     message: >
       Steganography library import — possible data hiding in images.
     severity: WARNING

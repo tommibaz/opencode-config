@@ -89,18 +89,3 @@ rules:
     metadata:
       category: backdoor
       confidence: HIGH
-
-  # --- Exfiltration via custom HTTP headers ---
-  - id: js-ts-header-exfiltration
-    patterns:
-      - pattern: 'fetch($URL, { headers: { $HEADER: $DATA } })'
-      - metavariable-regex:
-          metavariable: $HEADER
-          regex: '(?i)(x-data|x-payload|x-token|x-secret|x-key|x-info|x-env)'
-    message: >
-      Data sent via custom HTTP header — possible header-based exfiltration.
-    severity: WARNING
-    languages: [javascript, typescript]
-    metadata:
-      category: backdoor
-      confidence: MEDIUM
