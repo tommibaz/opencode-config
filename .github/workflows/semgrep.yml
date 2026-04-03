@@ -25,3 +25,9 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - run: semgrep ci
+      - name: Run custom JS/TS recipes
+        run: |
+          semgrep --config semgrep/recipes/outbound-network-inventory.yaml \
+                  --config semgrep/recipes/npm-backdoor-detection.yaml \
+                  --include='*.ts' --include='*.js' --include='*.tsx' --include='*.jsx' \
+                  --error
