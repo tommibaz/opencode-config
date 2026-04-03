@@ -1,0 +1,97 @@
+rules:
+  # ============================================================
+  # JS/TS PERSISTENCE MECHANISM DETECTION
+  # Detects code patterns used to establish persistence on a
+  # compromised system (cron, systemd, shell profiles, etc).
+  # ============================================================
+
+  # --- Persistence: cron job creation ---
+  - id: js-ts-persistence-cron
+    pattern-either:
+      - pattern: $CP.exec('crontab ...')
+      - pattern: $CP.execSync('crontab ...')
+      - patterns:
+          - pattern: $FS.writeFileSync($PATH, ...)
+          - metavariable-regex:
+              metavariable: $PATH
+              regex: '(/etc/cron|\.crontab)'
+    message: >
+      Cron job creation — possible persistence mechanism.
+    severity: ERROR
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: HIGH
+
+  # --- Persistence: bashrc/profile modification ---
+  - id: js-ts-persistence-bashrc
+    pattern-either:
+      - patterns:
+          - pattern: $FS.appendFileSync($PATH, ...)
+          - metavariable-regex:
+              metavariable: $PATH
+              regex: '\.(bashrc|profile|zshrc|bash_profile)$'
+      - patterns:
+          - pattern: $FS.writeFileSync($PATH, ...)
+          - metavariable-regex:
+              metavariable: $PATH
+              regex: '\.(bashrc|profile|zshrc|bash_profile)$'
+    message: >
+      Shell profile modification — possible persistence mechanism.
+    severity: ERROR
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: HIGH
+
+  # --- Persistence: systemd service creation ---
+  - id: js-ts-persistence-systemd
+    pattern-either:
+      - patterns:
+          - pattern: $FS.writeFileSync($PATH, ...)
+          - metavariable-regex:
+              metavariable: $PATH
+              regex: '(/etc/systemd/system/|\.config/systemd/)'
+      - pattern: $CP.exec('systemctl enable ...')
+      - pattern: $CP.execSync('systemctl enable ...')
+    message: >
+      Systemd service creation or enablement — possible persistence mechanism.
+    severity: ERROR
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: HIGH
+
+  # --- Self-replication: copying self to other directories ---
+  - id: js-ts-self-replication
+    pattern-either:
+      - pattern: $FS.copyFileSync(__filename, $DEST)
+      - pattern: $FS.writeFileSync($DEST, $FS.readFileSync(__filename))
+    message: >
+      Self-replication pattern — possible worm behavior.
+    severity: ERROR
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: HIGH
+
+  # --- Living-off-the-land binaries ---
+  - id: js-ts-lolbin-execution
+    pattern-either:
+      - pattern: $CP.exec('certutil ...')
+      - pattern: $CP.execSync('certutil ...')
+      - pattern: $CP.exec('mshta ...')
+      - pattern: $CP.execSync('mshta ...')
+      - pattern: $CP.exec('bitsadmin ...')
+      - pattern: $CP.execSync('bitsadmin ...')
+      - pattern: $CP.exec('regsvr32 ...')
+      - pattern: $CP.execSync('regsvr32 ...')
+      - pattern: $CP.exec('rundll32 ...')
+      - pattern: $CP.execSync('rundll32 ...')
+    message: >
+      Execution of living-off-the-land binary (LOLBin) — possible evasion technique.
+    severity: ERROR
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: HIGH

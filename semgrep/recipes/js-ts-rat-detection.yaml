@@ -1,0 +1,107 @@
+rules:
+  # ============================================================
+  # JS/TS RAT (Remote Access Trojan) DETECTION
+  # Detects library imports and code patterns associated with
+  # remote access trojans and surveillance software.
+  # ============================================================
+
+  # --- Keylogger library import ---
+  - id: js-ts-keylogger-pattern
+    pattern-either:
+      - pattern: require('iohook')
+      - pattern: require('keylogger')
+      - pattern: require('node-key-sender')
+      - pattern: import $X from 'iohook'
+      - pattern: import $X from 'keylogger'
+      - pattern: import $X from 'node-key-sender'
+    message: >
+      Keylogger library import — possible credential capture.
+    severity: ERROR
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: HIGH
+
+  # --- Screenshot capture library import ---
+  - id: js-ts-screenshot-capture
+    pattern-either:
+      - pattern: require('screenshot-desktop')
+      - pattern: require('desktop-screenshot')
+      - pattern: require('node-screenshots')
+      - pattern: import $X from 'screenshot-desktop'
+      - pattern: import $X from 'desktop-screenshot'
+      - pattern: import $X from 'node-screenshots'
+    message: >
+      Screenshot capture library import — possible surveillance behavior.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: MEDIUM
+
+  # --- Microphone/camera capture library import ---
+  - id: js-ts-media-capture
+    pattern-either:
+      - pattern: require('node-record-lpcm16')
+      - pattern: require('mic')
+      - pattern: require('node-webcam')
+      - pattern: require('webcam')
+      - pattern: import $X from 'node-record-lpcm16'
+      - pattern: import $X from 'mic'
+      - pattern: import $X from 'node-webcam'
+      - pattern: import $X from 'webcam'
+    message: >
+      Microphone or camera capture library import — possible surveillance behavior.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: MEDIUM
+
+  # --- Reverse shell via net.Socket ---
+  - id: js-ts-reverse-shell-socket
+    pattern: |
+      require('net').Socket().pipe(require('child_process').spawn('/bin/sh', ['-i'], ...))
+    message: >
+      Reverse shell via net.Socket piped to shell — RAT behavior.
+    severity: ERROR
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: HIGH
+
+  # --- Cryptocurrency mining library import ---
+  - id: js-ts-crypto-mining
+    pattern-either:
+      - pattern: require('coin-hive')
+      - pattern: require('cryptocurrency-miner')
+      - pattern: require('webminer')
+      - pattern: require('node-cryptonight')
+      - pattern: import $X from 'coin-hive'
+      - pattern: import $X from 'cryptocurrency-miner'
+      - pattern: import $X from 'webminer'
+      - pattern: import $X from 'node-cryptonight'
+    message: >
+      Cryptocurrency mining library import — possible unauthorized mining.
+    severity: ERROR
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: HIGH
+
+  # --- Steganography library import ---
+  - id: js-ts-steganography-exfil
+    pattern-either:
+      - pattern: require('steganography')
+      - pattern: require('stegcloak')
+      - pattern: require('png-steg')
+      - pattern: import $X from 'steganography'
+      - pattern: import $X from 'stegcloak'
+      - pattern: import $X from 'png-steg'
+    message: >
+      Steganography library import — possible data hiding in images.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: MEDIUM

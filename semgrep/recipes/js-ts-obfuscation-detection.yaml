@@ -1,0 +1,91 @@
+rules:
+  # ============================================================
+  # JS/TS OBFUSCATION DETECTION
+  # Detects code obfuscation techniques used to hide malicious
+  # behavior in supply chain attacks.
+  # ============================================================
+
+  # --- Hex-encoded string decoding + eval/exec ---
+  - id: js-ts-hex-eval-exec
+    pattern-either:
+      - pattern: eval(Buffer.from($HEX, 'hex').toString(...))
+      - pattern: eval(Buffer.from($HEX, 'hex'))
+      - pattern: $CP.exec(Buffer.from($HEX, 'hex').toString(...))
+      - pattern: $CP.execSync(Buffer.from($HEX, 'hex').toString(...))
+    message: >
+      eval() or exec() with hex-decoded string — obfuscated code execution.
+    severity: ERROR
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: HIGH
+
+  # --- String concatenation to hide module names ---
+  - id: js-ts-concat-obfuscated-require
+    pattern-either:
+      - pattern: require($A + $B)
+      - pattern: require($A + $B + $C)
+    message: >
+      require() with string concatenation — possible module name obfuscation.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: MEDIUM
+
+  # --- String concatenation to hide function names on global ---
+  - id: js-ts-concat-obfuscated-global-call
+    pattern-either:
+      - pattern: global[$A + $B](...)
+      - pattern: globalThis[$A + $B](...)
+      - pattern: this[$A + $B](...)
+    message: >
+      Dynamic function call via string concatenation on global object — possible eval/exec obfuscation.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: MEDIUM
+
+  # --- Dynamic import from variable (user-controlled path) ---
+  - id: js-ts-dynamic-import-variable
+    pattern: import($VAR)
+    message: >
+      Dynamic import() with variable argument — possible arbitrary code loading.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: MEDIUM
+
+  # --- Gzip/deflate compressed payload + eval ---
+  - id: js-ts-compressed-eval
+    patterns:
+      - pattern: |
+          $DECOMPRESSED = $ZLIB.inflateSync($COMPRESSED);
+          ...
+          eval($DECOMPRESSED);
+    message: >
+      Gzip/deflate decompressed payload passed to eval — obfuscated code execution.
+    severity: ERROR
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: HIGH
+
+  # --- Download + decrypt + execute (multi-stage) ---
+  - id: js-ts-download-decrypt-execute
+    patterns:
+      - pattern: |
+          $PAYLOAD = await fetch($URL);
+          ...
+          $DECRYPTED = $DECRYPT($PAYLOAD, ...);
+          ...
+          eval($DECRYPTED);
+    message: >
+      Download, decrypt, and eval — multi-stage payload delivery.
+    severity: ERROR
+    languages: [javascript, typescript]
+    metadata:
+      category: backdoor
+      confidence: HIGH
