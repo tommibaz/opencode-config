@@ -81,7 +81,7 @@ function textToNumber(text: string): number {
 }
 
 export const add = tool({
-	description: "Add two numbers",
+	description: "ALWAYS use this tool when you need to add numbers together. Do NOT calculate math in your head to avoid hallucinations.",
 	args: {
 		a: tool.schema
 			.string()
@@ -102,7 +102,7 @@ export const add = tool({
 });
 
 export const multiply = tool({
-	description: "Multiply two numbers",
+	description: "ALWAYS use this tool when you need to multiply numbers together. Do NOT calculate math in your head to avoid hallucinations.",
 	args: {
 		a: tool.schema
 			.string()
@@ -123,7 +123,7 @@ export const multiply = tool({
 });
 
 export const subtract = tool({
-	description: "Subtract two numbers",
+	description: "ALWAYS use this tool when you need to subtract numbers. Do NOT calculate math in your head to avoid hallucinations.",
 	args: {
 		a: tool.schema
 			.string()
@@ -144,7 +144,7 @@ export const subtract = tool({
 });
 
 export const divide = tool({
-	description: "Divide two numbers",
+	description: "ALWAYS use this tool when you need to divide numbers. Do NOT calculate math in your head to avoid hallucinations.",
 	args: {
 		a: tool.schema
 			.string()
