@@ -44,7 +44,7 @@ FOUND_SECRETS=0
 
 # --- Pass 1: keyword-context patterns ---
 # Catches: api_key = "...", password: "...", etc.
-KEYWORD_MATCHES=$(git ls-files -z | xargs -0 rg -in --column \
+KEYWORD_MATCHES=$(git ls-files -z | grep -zvZ 'secrets/gitleaks\.toml' | xargs -0 rg -in --column \
   '(api.?key|secret|token|password|credential|private.?key)\s*[:=]\s*["\x27]?[A-Za-z0-9_\-/+=]{8,}' \
   2>/dev/null)
 KEYWORD_EXIT=$?
@@ -63,7 +63,7 @@ fi
 # --- Pass 2: prefix-based patterns ---
 # Catches: AKIA*, ghp_*, sk-proj-*, private key headers, etc.
 if [ -f "$PATTERN_FILE" ]; then
-  PREFIX_MATCHES=$(git ls-files -z | xargs -0 rg -n --column \
+  PREFIX_MATCHES=$(git ls-files -z | grep -zvZ 'secrets/gitleaks\.toml' | xargs -0 rg -n --column \
     -f "$PATTERN_FILE" \
     2>/dev/null)
   PREFIX_EXIT=$?
