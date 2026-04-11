@@ -17,7 +17,7 @@ This document contains specific instructions for AI agents and developers workin
 - **Supply Chain Guard**: If adding a new ecosystem, update `ecosystems.ts`, add the corresponding semgrep recipes in `semgrep/recipes/`, and update the `README.md`.
 - **Secret Patterns**: When adding to `secrets/secret-patterns.txt`, ensure patterns are prefix-based to work efficiently with `ripgrep` in the `.husky/pre-push` hook. Run the regex validation script if you modify patterns.
 - **Commit Format**: Use conventional commits (e.g., `feat:`, `fix:`, `chore:`, `docs:`, `build(deps):`).
-- **Dependencies**: Use `npm` for dependency management (`package.json`, `package-lock.json`).
+- **Dependencies & Tools**: Use `npm` for dependency management (`package.json`, `package-lock.json`). When creating OpenCode tools, do **not** add `zod` as an external dependency. Use `tool.schema` provided natively by `@opencode-ai/plugin` instead.
 
 ## Context
 When modifying this repository, remember that you are modifying the *global* configuration that will be distributed to all users. Keep `AGENTS.md` general enough for all projects, and keep `opencode.jsonc` clean.
