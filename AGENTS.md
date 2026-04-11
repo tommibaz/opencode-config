@@ -12,6 +12,10 @@ This document provides system-wide guidelines for agentic coding agents.
 
 ## General Principles
 
+### Math
+
+Always use the provided math tools for calculations instead of attempting to compute them mentally.
+
 ### Code Quality
 
 Write clean, maintainable code. Prioritize readability over cleverness. Follow the principle of least surprise - code should behave as a reader would reasonably expect.
