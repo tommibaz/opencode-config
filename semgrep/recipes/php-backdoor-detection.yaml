@@ -127,9 +127,28 @@ rules:
 
   # --- Backdoor: obfuscated function calls ---
   - id: php-backdoor-variable-function
-    pattern: $FUNC($ARGS)
+    patterns:
+      - pattern: $FUNC(...)
+      - metavariable-regex:
+          metavariable: $FUNC
+          regex: ^\$
+      - pattern-not: $OBJ->$METHOD(...)
+      - pattern-not: $CLASS::$METHOD(...)
     message: >
-      Variable function call - may hide malicious function invocation.
+      Variable function call - a PHP variable is used as a function name,
+      which may hide malicious function invocation (e.g. $fn = "system"; $fn("cmd")).
+    severity: WARNING
+    languages: [php]
+    metadata:
+      category: suspicious
+
+  - id: php-backdoor-call-user-func
+    pattern-either:
+      - pattern: call_user_func($FUNC, ...)
+      - pattern: call_user_func_array($FUNC, ...)
+    message: >
+      call_user_func/call_user_func_array - dynamic function dispatch
+      that can hide malicious invocations.
     severity: WARNING
     languages: [php]
     metadata:
