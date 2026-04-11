@@ -16,6 +16,15 @@ An opinionated [OpenCode](https://opencode.ai) configuration with security baked
 - Lets `.env.example`, `.env.sample`, `.env.template` through, no bother
 - Throws a clear error telling you why and what to use instead
 
+### Successful Editing Plugin
+
+`plugins/successful-editing.ts` -- Analyzes files after they've been edited to verify they are error-free based on the IDE's Language Server Protocol (LSP).
+
+- Listens for `file.edited` to track which files the agent modifies
+- Analyzes `lsp.client.diagnostics` events coming from your editor
+- Emits a custom `successful-editing` event into the agent's context stream when an edit results in zero LSP errors
+- Allows the agent to self-verify that its generated code didn't introduce syntax or type errors before proceeding
+
 ### Supply Chain Guard Plugin
 
 `plugins/supply-chain-guard/` -- Automatically scans your project after any package install or update. Covers nine ecosystems, scanning both vendor directories and your own source code.
