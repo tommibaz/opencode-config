@@ -221,7 +221,7 @@ git clone https://github.com/<you>/opencode-config.git ~/.config/opencode
 cd ~/.config/opencode
 
 # Check out the latest release
-git checkout v2.0.0
+git checkout v2.0.1
 
 # Install dependencies
 npm install
@@ -234,7 +234,7 @@ Pull new releases from upstream and check out the tag:
 ```bash
 cd ~/.config/opencode
 git fetch --tags
-git checkout v2.0.0
+git checkout v2.0.1
 npm install
 ```
 
