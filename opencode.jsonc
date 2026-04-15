@@ -75,7 +75,7 @@
 	},
 	"mode": {
 		"brainstorm": {
-			"model": "github-copilot/claude-3.5-sonnet",
+			"model": "github-copilot/claude-4.6-sonnet",
 			"temperature": 0.7,
 			"prompt": "{file:./prompts/brainstorm.txt}",
 			"permission": {

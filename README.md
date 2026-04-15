@@ -115,7 +115,7 @@ Four modes configured in `opencode.jsonc`, each with temperature tuning and perm
 
 | Mode | Model | Temperature | Write access | Prompt |
 |---|---|---|---|---|
-| `brainstorm` | `claude-3.5-sonnet` | 0.7 | Read-only | `prompts/brainstorm.txt` |
+| `brainstorm` | `claude-4.6-sonnet` | 0.7 | Read-only | `prompts/brainstorm.txt` |
 | `plan` | `gemini-3.1-pro-preview` | 0.1 | Read-only | Default |
 | `analyze` | `gemini-3.1-pro-preview` | 0.1 | Read-only | `prompts/analysis.txt` |
 | `build` | Default | 0.0 | Full | Default |
@@ -124,13 +124,30 @@ All modes have access to all MCP tools (Semgrep, Chrome DevTools, `websearch_cit
 
 ### Skills
 
-`skills/` & `tools/feature-planning.ts` -- Domain-specific workflows that the agent can load on demand.
+`skills/` & `tools/` -- Domain-specific workflows that the agent can load on demand.
 
-- **Feature Planning**: A dedicated skill for agile planning. When you ask to plan a feature, write user stories, or break down an epic, the agent loads `skills/feature-planning/SKILL.md` to guide the session, define acceptance criteria, and establish a definition of done.
+- **Feature Planning** (`/feature`): A dedicated skill for agile planning. When you ask to plan a feature, write user stories, or break down an epic, the agent loads `skills/feature-planning/SKILL.md` to guide the session, define acceptance criteria, and establish a definition of done. Runs in **plan** mode.
+
+- **Vulnerability Handling** (`/vuln`): A structured workflow for handling CVE/CWE vulnerabilities. Guides through identification, risk assessment, site-wide E2E testing, fixing, version-locking, and PR documentation. Transitions through modes automatically: **analyze** (identify) → **plan** (assess risk) → **build** (write tests, fix, document). When no CVE is provided, auto-discovers vulnerabilities via Dependabot alerts, SARIF/CodeQL results, SBOM data, or local audit tools.
+
+### Slash Commands
+
+`commands/` -- Quick-launch shortcuts for skills and workflows.
+
+| Command | Starts in | Description |
+|---|---|---|
+| `/feature` | plan | Start an agile feature planning session |
+| `/vuln` | analyze | Start a vulnerability handling session (CVE/CWE) |
 
 ### Custom Tools
 
-`tools/math.ts` -- Arithmetic tools (`math_add`, `math_subtract`, `math_multiply`, `math_divide`) that force the agent to use proper calculation instead of guessing in its head. Supports text-to-number parsing in English, Swedish, Spanish, German, and French, with contextual US short-scale vs UK/EU long-scale handling for "billion".
+`tools/` -- Custom tools available to the agent in every session.
+
+- `math.ts` -- Arithmetic tools (`math_add`, `math_subtract`, `math_multiply`, `math_divide`) that force the agent to use proper calculation instead of guessing in its head. Supports text-to-number parsing in English, Swedish, Spanish, German, and French, with contextual US short-scale vs UK/EU long-scale handling for "billion".
+- `feature-planning.ts` -- Loads the feature-planning skill into the agent's context when triggered.
+- `vulnerability-handling.ts` -- Loads the vulnerability-handling skill with auto-discovery of CVEs via Dependabot, SARIF, SBOM, or local audit tools when no specific CVE is provided.
+
+`tools/sbom-scan.ts` -- Sets up SBOM vulnerability scanning in a GitHub Actions CI pipeline. Detects GitHub repos, generates a Trivy workflow with SPDX SBOM generation and SARIF reporting, and optionally automates the full setup via `gh` CLI. MEDIUM+ severities block the build; LOW findings are reported to the GitHub Security tab as informational.
 
 ### MCP Servers (Global)
 
@@ -221,7 +238,7 @@ git clone https://github.com/<you>/opencode-config.git ~/.config/opencode
 cd ~/.config/opencode
 
 # Check out the latest release
-git checkout v2.0.1
+git checkout v2.0.2
 
 # Install dependencies
 npm install
@@ -234,7 +251,7 @@ Pull new releases from upstream and check out the tag:
 ```bash
 cd ~/.config/opencode
 git fetch --tags
-git checkout v2.0.1
+git checkout v2.0.2
 npm install
 ```
 
