@@ -11,6 +11,6 @@ describe("mode config", () => {
     )
 
     expect(brainstormBlock).not.toBeNull()
-    expect(brainstormBlock![1]).toBe("github-copilot/claude-4.6-sonnet")
+    expect(brainstormBlock![1]).toBe("github-copilot/claude-sonnet-4.6")
   })
 })

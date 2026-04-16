@@ -1,115 +1,113 @@
 {
-	"$schema": "https://opencode.ai/config.json",
-	"instructions": [
-		"PROJECT.md"
-	],
-	"plugin": ["opencode-gemini-auth@latest", "opencode-websearch-cited@latest"],
-	"model": "github-copilot/claude-opus-4.6",
-	"mcp": {
-		"semgrep": {
-			"type": "local",
-			"command": ["semgrep", "mcp"]
-		},
-		"chrome-devtools": {
-			"type": "local",
-			"command": ["npx", "-y", "chrome-devtools-mcp@latest"]
-		},
-		"figma-mcp-dektop": {
-			"type": "remote",
-			"url": "http://127.0.0.1:3845/mcp"
-		}
-	},
-	"provider": {
-		"ollama": {
-			"npm": "@ai-sdk/openai-compatible",
-			"name": "Ollama (local)",
-			"options": {
-				"baseURL": "http://localhost:11434/v1"
-			},
-			"models": {
-				"minimax-m2.1": {
-					"name": "minimax-m2.1"
-				},
-				"gemma4:31b": {
-					"name": "Gemma 4 31b"
-				}
-			}
-		},
-		"google": {
-			"options": {
-				"websearch_cited": {
-					"model": "gemini-2.5-flash"
-				}
-			},
-			"models": {
-				"gemini-2.5-flash": {
-					"options": {
-						"thinkingConfig": {
-							"thinkingBudget": 8192,
-							"includeThoughts": true
-						}
-					}
-				},
-				"gemini-2.5-pro": {
-					"options": {
-						"thinkingConfig": {
-							"thinkingBudget": 8192,
-							"includeThoughts": true
-						}
-					}
-				},
-				"gemini-3-flash-preview": {
-					"options": {
-						"thinkingConfig": {
-							"thinkingLevel": "high",
-							"includeThoughts": true
-						}
-					}
-				},
-				"gemini-3-pro-preview": {
-					"options": {
-						"thinkingConfig": {
-							"thinkingLevel": "high",
-							"includeThoughts": true
-						}
-					}
-				}
-			}
-		}
-	},
-	"mode": {
-		"brainstorm": {
-			"model": "github-copilot/claude-4.6-sonnet",
-			"temperature": 0.7,
-			"prompt": "{file:./prompts/brainstorm.txt}",
-			"permission": {
-				"bash": "deny",
-				"edit": "deny",
-				"write": "deny"
-			}
-		},
-		"plan": {
-			"model": "github-copilot/gemini-3.1-pro-preview",
-			"temperature": 0.1,
-			"permission": {
-				"bash": "deny",
-				"edit": "deny",
-				"write": "deny"
-			}
-		},
-		"analyze": {
-			"model": "github-copilot/gemini-3.1-pro-preview",
-			"temperature": 0.1,
-			"prompt": "{file:./prompts/analysis.txt}",
-			"permission": {
-				"bash": "deny",
-				"edit": "deny",
-				"write": "deny"
-			}
-		},
-		"build": {
-			"temperature": 0.0,
-			"permission": "allow"
-		}
-	}
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": ["PROJECT.md"],
+  "plugin": ["opencode-gemini-auth@latest", "opencode-websearch-cited@latest"],
+  "model": "github-copilot/claude-opus-4.6",
+  "mcp": {
+    "semgrep": {
+      "type": "local",
+      "command": ["semgrep", "mcp"],
+    },
+    "chrome-devtools": {
+      "type": "local",
+      "command": ["npx", "-y", "chrome-devtools-mcp@latest"],
+    },
+    "figma-mcp-dektop": {
+      "type": "remote",
+      "url": "http://127.0.0.1:3845/mcp",
+    },
+  },
+  "provider": {
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama (local)",
+      "options": {
+        "baseURL": "http://localhost:11434/v1",
+      },
+      "models": {
+        "minimax-m2.1": {
+          "name": "minimax-m2.1",
+        },
+        "gemma4:31b": {
+          "name": "Gemma 4 31b",
+        },
+      },
+    },
+    "google": {
+      "options": {
+        "websearch_cited": {
+          "model": "gemini-2.5-flash",
+        },
+      },
+      "models": {
+        "gemini-2.5-flash": {
+          "options": {
+            "thinkingConfig": {
+              "thinkingBudget": 8192,
+              "includeThoughts": true,
+            },
+          },
+        },
+        "gemini-2.5-pro": {
+          "options": {
+            "thinkingConfig": {
+              "thinkingBudget": 8192,
+              "includeThoughts": true,
+            },
+          },
+        },
+        "gemini-3-flash-preview": {
+          "options": {
+            "thinkingConfig": {
+              "thinkingLevel": "high",
+              "includeThoughts": true,
+            },
+          },
+        },
+        "gemini-3-pro-preview": {
+          "options": {
+            "thinkingConfig": {
+              "thinkingLevel": "high",
+              "includeThoughts": true,
+            },
+          },
+        },
+      },
+    },
+  },
+  "mode": {
+    "brainstorm": {
+      "model": "github-copilot/claude-sonnet-4.6",
+      "temperature": 0.7,
+      "prompt": "{file:./prompts/brainstorm.txt}",
+      "permission": {
+        "bash": "deny",
+        "edit": "deny",
+        "write": "deny",
+      },
+    },
+    "plan": {
+      "model": "github-copilot/claude-opus-4.6",
+      "temperature": 0.1,
+      "permission": {
+        "bash": "deny",
+        "edit": "deny",
+        "write": "deny",
+      },
+    },
+    "analyze": {
+      "model": "github-copilot/claude-opus-4.6",
+      "temperature": 0.1,
+      "prompt": "{file:./prompts/analysis.txt}",
+      "permission": {
+        "bash": "deny",
+        "edit": "deny",
+        "write": "deny",
+      },
+    },
+    "build": {
+      "temperature": 0.0,
+      "permission": "allow",
+    },
+  },
 }
